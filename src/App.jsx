@@ -295,11 +295,28 @@ function App() {
                   contentStyle={{
                     background: theme.panel,
                     border: `1px solid ${theme.border}`,
-                    borderRadius: 8,
-                    boxShadow: '0 4px 12px rgba(15, 23, 42, 0.08)',
+                    borderRadius: 6,
+                    boxShadow: '0 2px 6px rgba(15, 23, 42, 0.08)',
+                    padding: '4px 8px',
+                    fontSize: 12,
+                    lineHeight: 1.2,
                   }}
-                  labelStyle={{ color: theme.textSecondary }}
-                  itemStyle={{ color: theme.text }}
+                  labelStyle={{
+                    color: theme.textSecondary,
+                    fontSize: 12,
+                    lineHeight: 1.2,
+                    margin: 0,
+                    padding: 0,
+                    fontWeight: 600,
+                  }}
+                  itemStyle={{
+                    color: theme.text,
+                    fontSize: 12,
+                    lineHeight: 1.2,
+                    margin: 0,
+                    padding: '2px 0 0',
+                  }}
+                  wrapperStyle={{ outline: 'none', zIndex: 10 }}
                   formatter={(value, name) => [
                     fmt(value),
                     name === 'cashValue' ? 'Cash (real $)' : 'Invested (real $)',
