@@ -292,7 +292,7 @@ function App() {
                   tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
                 />
                 <Tooltip
-                  position={{ x: 40, y: 10 }}
+                  position={{ x: 70, y: 10 }}
                   cursor={false}
                   isAnimationActive={false}
                   contentStyle={{
