@@ -292,8 +292,11 @@ function App() {
                   tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
                 />
                 <Tooltip
+                  position={{ x: 10, y: 10 }}
+                  cursor={false}
+                  isAnimationActive={false}
                   contentStyle={{
-                    background: theme.panel,
+                    background: 'rgba(255, 255, 255, 0.88)',
                     border: `1px solid ${theme.border}`,
                     borderRadius: 6,
                     boxShadow: '0 2px 6px rgba(15, 23, 42, 0.08)',
@@ -316,7 +319,7 @@ function App() {
                     margin: 0,
                     padding: '2px 0 0',
                   }}
-                  wrapperStyle={{ outline: 'none', zIndex: 10 }}
+                  wrapperStyle={{ outline: 'none', zIndex: 10, pointerEvents: 'none' }}
                   formatter={(value, name) => [
                     fmt(value),
                     name === 'cashValue' ? 'Cash (real $)' : 'Invested (real $)',
