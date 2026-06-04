@@ -92,15 +92,23 @@ const fmt = (n) =>
     maximumFractionDigits: 0,
   }).format(n)
 
+const PARTNER_NAME = 'Altura Credit Union'
+const PARTNER_LOGO =
+  'https://www.alturacu.com/wp-content/uploads/2026/02/altura-logo.svg'
+const PARTNER_URL = 'https://www.alturacu.com'
+
 const theme = {
-  bg: '#0b0f14',
-  panel: '#121820',
-  border: '#1e293b',
-  text: '#e2e8f0',
-  muted: '#94a3b8',
-  accent: '#38bdf8',
-  cash: '#f97316',
-  invested: '#22c55e',
+  bg: '#f8fafc',
+  panel: '#ffffff',
+  border: '#e2e8f0',
+  text: '#0f172a',
+  textSecondary: '#334155',
+  muted: '#64748b',
+  primary: '#1e3a5f',
+  primaryDark: '#0f2744',
+  cash: '#c2410c',
+  invested: '#1e3a5f',
+  grid: '#e2e8f0',
 }
 
 const openai = new OpenAI({
@@ -222,20 +230,32 @@ function App() {
   }
 
   return (
-    <div className="equalizer-app" style={{ background: theme.bg, color: theme.text }}>
-      <header className="equalizer-header">
-        <h1 className="equalizer-title">The Equalizer</h1>
-        <p className="equalizer-subtitle">
-          See the Safe Saver&apos;s Penalty: cash loses real purchasing power to inflation while
-          investing builds wealth—in today&apos;s dollars.
-        </p>
+    <>
+      <header className="partner-navbar">
+        <div className="partner-navbar-brand">
+          <img
+            src={PARTNER_LOGO}
+            alt="Altura Credit Union"
+            className="partner-logo"
+          />
+          <span className="partner-nav-divider" aria-hidden="true" />
+          <span className="partner-nav-product">The Equalizer</span>
+        </div>
+        <p className="partner-nav-tagline">Member Financial Wellness</p>
       </header>
 
-      <div className="equalizer-grid">
-        <aside className="equalizer-panel" style={{ borderColor: theme.border }}>
-          <h2 className="panel-heading" style={{ color: theme.muted }}>
-            Assumptions
-          </h2>
+      <div className="equalizer-app">
+        <header className="equalizer-header">
+          <h1 className="equalizer-title">Purchasing Power Simulator</h1>
+          <p className="equalizer-subtitle">
+            Understand the Safe Saver&apos;s Penalty: cash loses real purchasing power to inflation
+            while investing in appreciating assets builds long-term wealth—in today&apos;s dollars.
+          </p>
+        </header>
+
+        <div className="equalizer-grid">
+          <aside className="equalizer-panel">
+            <h2 className="panel-heading">Assumptions</h2>
           {SLIDERS.map(({ key, label, min, max, step, format }) => (
             <SliderControl
               key={key}
@@ -251,13 +271,10 @@ function App() {
         </aside>
 
         <main className="equalizer-main">
-          <div
-            className="chart-container equalizer-panel"
-            style={{ borderColor: theme.border }}
-          >
+          <div className="chart-container equalizer-panel">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data} margin={{ top: 8, right: 24, left: 8, bottom: 8 }}>
-                <CartesianGrid stroke="#1e293b" strokeDasharray="3 3" />
+                <CartesianGrid stroke={theme.grid} strokeDasharray="3 3" />
                 <XAxis
                   dataKey="year"
                   stroke={theme.muted}
@@ -276,24 +293,31 @@ function App() {
                 />
                 <Tooltip
                   contentStyle={{
-                    background: '#0f172a',
+                    background: theme.panel,
                     border: `1px solid ${theme.border}`,
                     borderRadius: 8,
+                    boxShadow: '0 4px 12px rgba(15, 23, 42, 0.08)',
                   }}
-                  labelStyle={{ color: theme.muted }}
+                  labelStyle={{ color: theme.textSecondary }}
+                  itemStyle={{ color: theme.text }}
                   formatter={(value, name) => [
                     fmt(value),
                     name === 'cashValue' ? 'Cash (real $)' : 'Invested (real $)',
                   ]}
                   labelFormatter={(y) => `Year ${y}`}
                 />
-                <Legend wrapperStyle={{ paddingTop: 12 }} />
+                <Legend
+                  wrapperStyle={{ paddingTop: 12 }}
+                  formatter={(value) => (
+                    <span style={{ color: theme.textSecondary, fontSize: 13 }}>{value}</span>
+                  )}
+                />
                 <Line
                   type="monotone"
                   dataKey="cashValue"
                   name="Cash (real $)"
                   stroke={theme.cash}
-                  strokeWidth={2.5}
+                  strokeWidth={2}
                   dot={false}
                 />
                 <Line
@@ -301,108 +325,102 @@ function App() {
                   dataKey="investedValue"
                   name="Invested (real $)"
                   stroke={theme.invested}
-                  strokeWidth={2.5}
+                  strokeWidth={3.5}
                   dot={false}
                 />
               </LineChart>
             </ResponsiveContainer>
           </div>
 
-          <div
-            className="summary-card equalizer-panel"
-            style={{ borderColor: theme.border }}
-          >
+          <div className="summary-card equalizer-panel">
             <h3 className="summary-title">Year 20 — Purchasing power gap</h3>
-            <p className="summary-detail" style={{ color: theme.muted }}>
+            <p className="summary-detail">
               Holding cash (real):{' '}
-              <strong style={{ color: theme.cash }}>{fmt(year20.cashValue)}</strong>
+              <strong className="summary-strong--cash">{fmt(year20.cashValue)}</strong>
               {' · '}
               Investing (real):{' '}
-              <strong style={{ color: theme.invested }}>{fmt(year20.investedValue)}</strong>
+              <strong className="summary-strong--invested">{fmt(year20.investedValue)}</strong>
             </p>
             <p
-              className="summary-gap"
-              style={{ color: gap >= 0 ? theme.invested : theme.cash }}
+              className={`summary-gap ${gap >= 0 ? 'summary-gap--positive' : 'summary-gap--negative'}`}
             >
               {gap >= 0 ? 'You gain ' : 'You lose '}
               {fmt(Math.abs(gap))} in real purchasing power by investing vs. cash.
             </p>
           </div>
+
+          <section className="cta-section equalizer-panel" aria-labelledby="cta-heading">
+            <h2 id="cta-heading" className="cta-heading">
+              Ready to stop losing money to inflation?
+            </h2>
+            <a
+              href={PARTNER_URL}
+              className="cta-button"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open a Target-Date Fund with {PARTNER_NAME}
+            </a>
+          </section>
         </main>
+        </div>
+
+        <section className="nurturer-chat equalizer-panel" aria-label="AI Nurturer chat">
+          <h2 className="panel-heading nurturer-heading">AI Nurturer</h2>
+          <p className="nurturer-intro">
+            Ask questions about your simulation. Guidance is educational only—not financial advice.
+          </p>
+
+          <div className="chat-messages" role="log" aria-live="polite">
+            {chatHistory.length === 0 && (
+              <p className="chat-empty">
+                Try: &ldquo;Why does my cash line fall behind?&rdquo; or &ldquo;What happens if
+                inflation goes up?&rdquo;
+              </p>
+            )}
+            {chatHistory.map((msg, index) => (
+              <div
+                key={index}
+                className={`chat-bubble chat-bubble--${msg.role}`}
+              >
+                <span className="chat-bubble-label">
+                  {msg.role === 'user' ? 'You' : 'Nurturer'}
+                </span>
+                <p className="chat-bubble-text">{msg.content}</p>
+              </div>
+            ))}
+            {isChatLoading && (
+              <div className="chat-bubble chat-bubble--assistant">
+                <span className="chat-bubble-label">Nurturer</span>
+                <p className="chat-bubble-text chat-typing">Thinking…</p>
+              </div>
+            )}
+            <div ref={chatEndRef} />
+          </div>
+
+          <div className="chat-composer">
+            <input
+              type="text"
+              className="chat-input"
+              placeholder="Ask about inflation, investing, or your chart…"
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              onKeyDown={handleChatKeyDown}
+              disabled={isChatLoading}
+              aria-label="Chat message"
+            />
+            <button
+              type="button"
+              className="chat-send"
+              onClick={handleSend}
+              disabled={isChatLoading || !userInput.trim()}
+            >
+              Send
+            </button>
+          </div>
+        </section>
       </div>
-
-      <section
-        className="nurturer-chat equalizer-panel"
-        style={{ borderColor: theme.border }}
-        aria-label="AI Nurturer chat"
-      >
-        <h2 className="panel-heading nurturer-heading" style={{ color: theme.muted }}>
-          AI Nurturer
-        </h2>
-        <p className="nurturer-intro" style={{ color: theme.muted }}>
-          Ask questions about your simulation. Guidance is educational only—not financial advice.
-        </p>
-
-        <div className="chat-messages" role="log" aria-live="polite">
-          {chatHistory.length === 0 && (
-            <p className="chat-empty" style={{ color: theme.muted }}>
-              Try: &ldquo;Why does my cash line fall behind?&rdquo; or &ldquo;What happens if inflation
-              goes up?&rdquo;
-            </p>
-          )}
-          {chatHistory.map((msg, index) => (
-            <div
-              key={index}
-              className={`chat-bubble chat-bubble--${msg.role}`}
-              style={
-                msg.role === 'user'
-                  ? { background: '#1e3a5f', borderColor: theme.accent }
-                  : { background: '#1a2332', borderColor: theme.border }
-              }
-            >
-              <span className="chat-bubble-label" style={{ color: theme.muted }}>
-                {msg.role === 'user' ? 'You' : 'Nurturer'}
-              </span>
-              <p className="chat-bubble-text">{msg.content}</p>
-            </div>
-          ))}
-          {isChatLoading && (
-            <div
-              className="chat-bubble chat-bubble--assistant"
-              style={{ background: '#1a2332', borderColor: theme.border }}
-            >
-              <span className="chat-bubble-label" style={{ color: theme.muted }}>
-                Nurturer
-              </span>
-              <p className="chat-bubble-text chat-typing">Thinking…</p>
-            </div>
-          )}
-          <div ref={chatEndRef} />
-        </div>
-
-        <div className="chat-composer">
-          <input
-            type="text"
-            className="chat-input"
-            placeholder="Ask about inflation, investing, or your chart…"
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            onKeyDown={handleChatKeyDown}
-            disabled={isChatLoading}
-            aria-label="Chat message"
-          />
-          <button
-            type="button"
-            className="chat-send"
-            onClick={handleSend}
-            disabled={isChatLoading || !userInput.trim()}
-            style={{ background: theme.accent }}
-          >
-            Send
-          </button>
-        </div>
-      </section>
-    </div>
+    </>
   )
 }
 
